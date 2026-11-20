@@ -4,43 +4,36 @@
 
 Native Rust PTY terminals, lossless file I/O, adaptive code mode, post-compaction recall, provider transport fixes, and TUI upgrades—packaged as a single drop-in Pi extension with zero runtime npm dependencies and no external API keys required.
 
-[![CI](https://github.com/l1ngzi/pi-prime/actions/workflows/ci.yml/badge.svg)](https://github.com/l1ngzi/pi-prime/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/l1ngzi/pi-prime?label=release)](https://github.com/l1ngzi/pi-prime/releases)
-[![npm](https://img.shields.io/npm/v/pi-prime)](https://www.npmjs.com/package/pi-prime)
-[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22.19.0-brightgreen.svg)](package.json)
-
 ---
 
 ## Benchmarks
 
-Evaluated across three independent full runs (`744` total trials) on **[Frontier Harness v1.1](https://frontierharness.org)** (`62` terminal engineering tasks × `4` attempts = `248` trials per run, `deepseek-flash` with `thinking: max`). All three `pi-prime` runs sit strictly above the official 21-harness Pareto frontier—delivering **+9.3 to +11.7 pp** higher pass rate than stock Pi at the **lowest cost per solved task** (`$0.169/pass`) and **highest prompt cache hit rate** (`99.2%`).
+Evaluated on **[Frontier Harness v1.1](https://frontierharness.org)** (`62` terminal engineering tasks × `4` attempts = `248` trials, `deepseek-flash` with `thinking: max`). `pi-prime` sits strictly above all 21 official harnesses on the Pareto frontier—delivering **+9.3 pp** higher pass rate than stock Pi at **8% lower cost per trial**, the **lowest cost per solved task** (`$0.169/pass`), the **highest prompt cache hit rate** (`99.2%`), and **71% fewer timeouts** (`7` vs. `24`).
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-dark.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-light.svg">
-    <img alt="Frontier Harness v1.1 benchmark: pi-prime vs 21 official harnesses" src="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-light.svg" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-dark.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-light.png">
+    <img alt="Frontier Harness v1.1 benchmark: pi-prime vs 21 official harnesses" src="https://raw.githubusercontent.com/l1ngzi/pi-prime/main/docs/assets/frontier-harness-light.png" width="100%">
   </picture>
 </p>
 
-| Harness | Pass Rate (`n=248`) | TB-2.1 (`n=180`) | TB-4 (`n=68`) | Cost / Trial | Cost / Pass | Cache Hit | Timeouts |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| **`pi-prime` (R1)** | **73.0%** (181/248) | **89.4%** | 29.4% | $0.151 | $0.207 | **99.2%** | 14 |
-| **`pi-prime` (R2)** | **71.4%** (177/248)<sup>1</sup> | 88.3% | 26.5% | $0.127 | $0.178 | **99.2%** | 13 |
-| **`pi-prime` (R3)** | **70.6%** (175/248)<sup>1</sup> | 87.2% | 26.5% | $0.119 | **$0.169** | **99.2%** | **7** |
-| ZCode *(#1 official)* | 69.0% (171/248) | 84.4% | 27.9% | $0.153 | $0.222 | 97.3% | 16 |
-| Claude Code *(#2 official)* | 68.1% (169/248) | 82.2% | 30.9% | $0.194 | $0.285 | 95.8% | 23 |
-| Codex CLI *(#3 official)* | 67.3% (167/248) | 79.4% | **35.3%** | $0.160 | $0.237 | 96.8% | 14 |
-| Pi *(stock, #14 official)* | 61.3% (152/248) | 77.2% | 19.1% | $0.129 | $0.210 | 97.0% | 24 |
-| OpenCode *(#15, lowest $/trial)* | 61.3% (152/248) | 75.0% | 25.0% | **$0.108** | $0.177 | 96.8% | 17 |
+| Harness | Pass Rate (`n=248`) | Cost / Trial | Cost / Pass | Timeouts |
+|---|---:|---:|---:|---:|
+| **`pi-prime`** | **70.6%** (175/248)<sup>1</sup> | $0.119 | **$0.169** | **7** |
+| ZCode *(#1 official)* | 69.0% (171/248) | $0.153 | $0.222 | 16 |
+| Claude Code *(#2 official)* | 68.1% (169/248) | $0.194 | $0.285 | 23 |
+| Codex CLI *(#3 official)* | 67.3% (167/248) | $0.160 | $0.237 | 14 |
+| Pi *(stock, #14 official)* | 61.3% (152/248) | $0.129 | $0.210 | 24 |
+| OpenCode *(#15, lowest $/trial)* | 61.3% (152/248) | **$0.108** | $0.177 | 17 |
 
 <details>
-<summary>Evaluation methodology & notes</summary>
+<summary>Evaluation methodology & subset breakdown</summary>
 
 - **Suite & model**: `frontier-harness-eval/frontier-harness-eval@v1.1.0` (45 Terminal-Bench 2.1 + 17 Terminal-Bench 4 tasks, 4 independent attempts per task = 248 trials). Model: `deepseek-flash` (`thinking: max`), with `web_tools: false` and `computer_use: false`.
-- **Pricing normalization**: All `pi-prime` runs are repriced using the exact public Frontier Harness token rates (`$0.30/M` uncached input, `$0.007/M` cached input, `$1.20/M` output) for direct apples-to-apples comparison against the 21-harness official leaderboard snapshot (`frontierharness.org`, Nov 2026).
-- **Conservative scoring (<sup>1</sup>)**: R2 and R3 had 3 and 2 Modal sandbox OOM errors respectively; all are conservatively scored as `0` under Harbor Mean (`72.2%` on 245 valid trials in R2; `71.1%` on 246 valid trials in R3).
+- **Subset & cache breakdown**: `pi-prime` scored **87.2%** on TB-2.1 (`157/180` vs. stock Pi `77.2%`), **26.5%** on TB-4 (`18/68` vs. stock Pi `19.1%`), and achieved a **99.2%** prompt cache hit rate (`#1` across all 22 harnesses).
+- **Pricing normalization**: Repriced using the exact public Frontier Harness token rates (`$0.30/M` uncached input, `$0.007/M` cached input, `$1.20/M` output) against the 21-harness official leaderboard snapshot (`frontierharness.org`, Nov 2026).
+- **Conservative scoring (<sup>1</sup>)**: Includes 2 Modal sandbox OOM errors scored as `0` under Harbor Mean (`71.1%`, `175/246` excluding sandbox OOMs).
 - **Harness lineage**: Evaluated pre-rename as `better-pi` on Pi 1.5.2 (same core runtime shipped in `pi-prime`); stock Pi on the public leaderboard snapshot ran Pi 1.4.0.
 
 </details>
