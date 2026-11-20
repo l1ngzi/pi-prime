@@ -1,0 +1,193 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Match the tag to the package version
+        run: node -e "require('node:assert/strict').equal(process.env.GITHUB_REF_NAME, 'v' + require('./package.json').version)"
+
+  ci:
+    needs: verify-tag
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: verify-tag
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            asset: pi-prime-terminal-win32-x64.exe
+            bin: pi-prime-terminal.exe
+            musl: false
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            asset: pi-prime-terminal-win32-arm64.exe
+            bin: pi-prime-terminal.exe
+            musl: false
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            asset: pi-prime-terminal-linux-x64
+            bin: pi-prime-terminal
+            musl: true
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-musl
+            asset: pi-prime-terminal-linux-arm64
+            bin: pi-prime-terminal
+            musl: true
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            asset: pi-prime-terminal-darwin-arm64
+            bin: pi-prime-terminal
+            musl: false
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            asset: pi-prime-terminal-darwin-x64
+            bin: pi-prime-terminal
+            musl: false
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+          components: ${{ runner.os == 'Windows' && 'llvm-tools-preview' || '' }}
+
+      - name: Install musl tools
+        if: matrix.musl
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y musl-tools
+
+      - name: Build native binary
+        env:
+          RUSTFLAGS: ${{ runner.os == 'Windows' && '-C target-feature=+crt-static' || '' }}
+        run: cargo build --release --locked --manifest-path src/terminal/native/Cargo.toml --target ${{ matrix.target }}
+
+      - name: Stage artifact
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp "src/terminal/native/target/${{ matrix.target }}/release/${{ matrix.bin }}" "dist/${{ matrix.asset }}"
+
+      - name: Check Windows CRT imports
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $objdump = Join-Path (Split-Path (rustc --print target-libdir)) 'bin/llvm-objdump.exe'
+          $headers = & $objdump -p 'dist/${{ matrix.asset }}'
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          if ($headers -match 'DLL Name:\s+VCRUNTIME140[^\s]*\.dll') { throw 'Dynamic Visual C++ runtime import found' }
+
+      - name: Run helper handshake check
+        if: matrix.target != 'x86_64-apple-darwin'
+        shell: bash
+        env:
+          HELPER: dist/${{ matrix.asset }}
+        run: |
+          node --input-type=module - <<'EOF'
+          import assert from 'node:assert/strict';
+          import { execFileSync, spawn } from 'node:child_process';
+          import { resolve } from 'node:path';
+          import { createInterface } from 'node:readline';
+
+          const shell = process.platform === 'win32'
+            ? execFileSync('where.exe', ['pwsh.exe'], { encoding: 'utf8' }).split(/\r?\n/)[0]
+            : '/bin/bash';
+          const helper = resolve(process.env.HELPER);
+          const child = spawn(helper, [shell, process.env.RUNNER_TEMP], { stdio: ['pipe', 'pipe', 'inherit'], timeout: 10000 });
+          let ready = false;
+          createInterface({ input: child.stdout }).on('line', line => {
+            assert.deepEqual(JSON.parse(line), { event: 'ready' });
+            assert.equal(ready, false, 'unexpected second handshake');
+            ready = true;
+            child.stdin.end();
+          });
+          await new Promise((done, fail) => {
+            child.on('error', fail);
+            child.on('close', (code, signal) => {
+              try {
+                assert.equal(code, 0, String(signal ?? ''));
+                assert.ok(ready, 'helper exited before its ready handshake');
+                done();
+              } catch (err) {
+                fail(err);
+              }
+            });
+          });
+          EOF
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset }}
+          path: dist/${{ matrix.asset }}
+          if-no-files-found: error
+
+  publish:
+    needs: [ci, build]
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Generate third-party notices from the locked dependencies
+        run: |
+          cargo fetch --locked --manifest-path src/terminal/native/Cargo.toml
+          node scripts/generate-third-party-notices.mjs
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Verify the six release binaries and generate checksums
+        working-directory: dist
+        shell: bash
+        run: |
+          assets=(
+            pi-prime-terminal-darwin-arm64 pi-prime-terminal-darwin-x64
+            pi-prime-terminal-linux-arm64 pi-prime-terminal-linux-x64
+            pi-prime-terminal-win32-arm64.exe pi-prime-terminal-win32-x64.exe
+          )
+          diff -u <(printf '%s\n' "${assets[@]}") <(find . -maxdepth 1 -mindepth 1 -printf '%f\n' | LC_ALL=C sort)
+          for asset in "${assets[@]}"; do test -f "$asset" && test -s "$asset" || exit 1; done
+          sha256sum "${assets[@]}" > SHA256SUMS.txt
+          sha256sum --check SHA256SUMS.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: |
+            dist/pi-prime-terminal-*
+            dist/SHA256SUMS.txt
+            LICENSE
+            NOTICE
+            THIRD-PARTY-NOTICES.txt

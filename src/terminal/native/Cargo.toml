@@ -1,0 +1,26 @@
+[package]
+name = "pi-prime-terminal"
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+
+[dependencies]
+anyhow = "1"
+base64 = "0.22.1"
+portable-pty = "0.9.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["io-util", "macros", "process", "rt-multi-thread", "sync"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+filedescriptor = "0.8.3"
+lazy_static = "1"
+log = "0.4"
+shared_library = "0.1.9"
+winapi = { version = "0.3.9", features = ["std", "handleapi", "jobapi", "jobapi2", "libloaderapi", "minwinbase", "processenv", "processthreadsapi", "synchapi", "winbase", "wincon", "winerror", "winnt"] }
+
+[profile.release]
+strip = true

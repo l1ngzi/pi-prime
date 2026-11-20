@@ -1,0 +1,63 @@
+{
+  "name": "pi-prime",
+  "version": "0.1.0",
+  "description": "A sharpened, reliable core harness package for Pi: native PTY terminal, strict UTF-8 file tools, adaptive codemode & tool search, post-compaction session recall, OpenRouter fixes, and TUI polish.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "keywords": [
+    "pi-package",
+    "pi-coding-agent",
+    "ai-agent",
+    "coding-agent",
+    "terminal",
+    "pty"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/l1ngzi/pi-prime.git"
+  },
+  "homepage": "https://github.com/l1ngzi/pi-prime#readme",
+  "bugs": {
+    "url": "https://github.com/l1ngzi/pi-prime/issues"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "files": [
+    "src/",
+    "!src/terminal/native/target/",
+    "scripts/",
+    "LICENSE",
+    "NOTICE",
+    "THIRD-PARTY-NOTICES.txt",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "scripts": {
+    "postinstall": "node scripts/install-native.mjs",
+    "build": "node scripts/install-native.mjs --build",
+    "check": "tsc --noEmit",
+    "pretest": "npm run build",
+    "test": "tsx --test tests/artifacts.test.ts tests/execution-resources.test.ts tests/install-native.test.ts tests/third-party-notices.test.ts tests/tool-mode.test.ts tests/tool-search.test.ts tests/read.test.ts tests/edit.test.ts tests/write.test.ts tests/codemode.test.ts tests/tool-result-content.test.ts tests/openrouter.test.ts tests/schema.test.ts tests/session-recall.test.ts tests/tps.test.ts tests/terminal.test.ts tests/terminal-render.test.ts tests/pi-prime.test.mjs tests/model-selector.test.mjs"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "1.5.2",
+    "@types/node": "^24.0.0",
+    "@types/ssh2": "^1.15.5",
+    "ssh2": "^1.17.0",
+    "tsx": "^4.20.0",
+    "typebox": "1.3.27",
+    "typescript": "^5.9.0"
+  }
+}

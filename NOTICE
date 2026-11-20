@@ -1,0 +1,4 @@
+Contains Windows terminal code derived from OpenAI Codex, commit b8dceb0d4f29e49e73daa08f57fcf5181186f354.
+Copyright 2025 OpenAI. Licensed under Apache-2.0.
+The ConPTY sources retain their original MIT notices: Copyright (c) 2018-Present Wez Furlong.
+Local changes remove unused APIs and tests; PowerShell launch and the Pi bridge are specific to pi-prime's terminal module.
