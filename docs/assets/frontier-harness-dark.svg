@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="520" viewBox="0 0 1120 520" role="img" aria-label="Frontier Harness benchmark: pi-prime vs 21 official harnesses">
+<defs>
+  <radialGradient id="primeGlow-dark" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#2DD4BF" stop-opacity="0.32"/>
+    <stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"/>
+  </radialGradient>
+  <marker id="leapArrow-dark" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto">
+    <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#2DD4BF"/>
+  </marker>
+  <clipPath id="plotClip-dark">
+    <rect x="76" y="94" width="688" height="350" rx="6"/>
+  </clipPath>
+</defs>
+<rect x="0.5" y="0.5" width="1119" height="519" rx="12" fill="#0D1117" stroke="#30363D"/>
+<text x="32" y="40" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="19" font-weight="700" fill="#F0F6FC" letter-spacing="-0.02em">Frontier Harness v1.1 — Pass Rate vs. Cost per Trial</text>
+<text x="32" y="62" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="12.5" fill="#8B949E">62 terminal engineering tasks × 4 attempts (n = 248) · deepseek-flash (thinking: max) · unified Frontier Harness token rates</text>
+<circle cx="502" cy="79" r="4.5" fill="#2DD4BF"/>
+<text x="512" y="83" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" font-weight="600" fill="#5EEAD4">pi-prime (3 runs)</text>
+<circle cx="627" cy="79" r="4" fill="#CBD5E1"/>
+<text x="637" y="83" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" font-weight="500" fill="#B1BAC4">Pi (stock)</text>
+<circle cx="707" cy="79" r="3.5" fill="#484F58"/>
+<text x="716" y="83" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" fill="#8B949E">20 others</text>
+<rect x="76" y="94" width="688" height="350" rx="6" fill="#11161E" stroke="#30363D"/>
+<g clip-path="url(#plotClip-dark)">
+  <polygon points="76.0,94.0 764.0,94.0 764.0,191.5 408.1,191.5 347.8,251.6 152.7,305.6 76.0,305.6" fill="#2DD4BF" opacity="0.07"/>
+  <line x1="104.7" y1="94" x2="104.7" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="219.3" y1="94" x2="219.3" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="334.0" y1="94" x2="334.0" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="448.7" y1="94" x2="448.7" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="563.3" y1="94" x2="563.3" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="678.0" y1="94" x2="678.0" y2="444" stroke="#1F2630" stroke-width="1"/>
+  <line x1="76" y1="399.3" x2="764" y2="399.3" stroke="#1F2630" stroke-width="1"/>
+  <line x1="76" y1="324.9" x2="764" y2="324.9" stroke="#1F2630" stroke-width="1"/>
+  <line x1="76" y1="250.4" x2="764" y2="250.4" stroke="#1F2630" stroke-width="1"/>
+  <line x1="76" y1="175.9" x2="764" y2="175.9" stroke="#1F2630" stroke-width="1"/>
+  <line x1="76" y1="101.4" x2="764" y2="101.4" stroke="#1F2630" stroke-width="1"/>
+  <text x="88" y="114" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11" font-weight="600" fill="#5EEAD4" opacity="0.85">↖ Higher pass rate, lower cost</text>
+  <polyline points="152.7,305.6 347.8,251.6 408.1,191.5" fill="none" stroke="#484F58" stroke-width="1.6" stroke-dasharray="5,4" opacity="0.85"/>
+  <text x="752.0" y="182.6" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.5" fill="#8B949E" font-style="italic">Official 21-harness ceiling (69.0%)</text>
+  <line x1="408.0" y1="191.6" x2="764" y2="191.6" stroke="#484F58" stroke-width="1" stroke-dasharray="3,4" opacity="0.55"/>
+  <circle cx="465.6" cy="269.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="569.4" cy="293.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="424.5" cy="263.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="515.4" cy="341.7" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="412.4" cy="323.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="201.1" cy="317.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="422.9" cy="287.6" r="4" fill="#484F58" stroke="#0D1117" stroke-width="1.2" opacity="0.72"/>
+  <circle cx="347.8" cy="251.6" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="355.8" y="268.6" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">mini-SWE-agent</text>
+  <circle cx="446.5" cy="215.6" r="4.6" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="455.5" y="219.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="600" fill="#B1BAC4">Codex CLI</text>
+  <circle cx="643.8" cy="203.5" r="4.6" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="652.8" y="207.5" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="600" fill="#B1BAC4">Claude Code</text>
+  <circle cx="356.6" cy="359.7" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="356.6" y="376.7" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">Oh My Pi</text>
+  <circle cx="657.6" cy="287.6" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="666.6" y="291.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">Hermes</text>
+  <circle cx="152.7" cy="305.6" r="4.6" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="148.7" y="293.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="600" fill="#B1BAC4">OpenCode</text>
+  <circle cx="549.3" cy="251.6" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="558.3" y="264.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">DeepSeek Creator</text>
+  <circle cx="537.2" cy="227.6" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="546.2" y="230.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">KimiCode</text>
+  <circle cx="408.1" cy="191.5" r="4.6" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="417.1" y="187.5" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="600" fill="#B1BAC4">ZCode</text>
+  <circle cx="607.6" cy="233.6" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="616.6" y="237.6" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">Grok Build</text>
+  <circle cx="571.6" cy="413.7" r="4.2" fill="#8B949E" stroke="#0D1117" stroke-width="1.3"/>
+  <text x="580.6" y="417.7" text-anchor="start" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.2" font-weight="500" fill="#B1BAC4">Exo</text>
+  <circle cx="269.6" cy="305.6" r="8.5" fill="#30363D" opacity="0.55"/>
+  <circle cx="269.6" cy="305.6" r="5.2" fill="#CBD5E1" stroke="#0D1117" stroke-width="1.6"/>
+  <text x="269.6" y="325.6" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.8" font-weight="700" fill="#F0F6FC">Pi (stock)</text>
+  <text x="269.6" y="338.6" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="10.2" fill="#8B949E">61.3% · $0.129</text>
+  <path d="M 266.6 295.6 Q 239.6 234.6 257.5 168.5" fill="none" stroke="#2DD4BF" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#leapArrow-dark)"/>
+  <rect x="165.6" y="225.6" width="84" height="20" rx="10" fill="#0F2928" stroke="#115E59" stroke-width="1"/>
+  <text x="207.6" y="239.4" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="10.5" font-weight="700" fill="#5EEAD4">+9.3–11.7 pp</text>
+  <polyline points="215.3,167.5 259.5,155.5 398.2,131.5" fill="none" stroke="#2DD4BF" stroke-width="2.4" stroke-linecap="round"/>
+  <circle cx="215.3" cy="167.5" r="18" fill="url(#primeGlow-dark)"/>
+  <circle cx="215.3" cy="167.5" r="6.2" fill="#2DD4BF" stroke="#0D1117" stroke-width="2"/>
+  <circle cx="259.5" cy="155.5" r="18" fill="url(#primeGlow-dark)"/>
+  <circle cx="259.5" cy="155.5" r="6.2" fill="#2DD4BF" stroke="#0D1117" stroke-width="2"/>
+  <circle cx="398.2" cy="131.5" r="18" fill="url(#primeGlow-dark)"/>
+  <circle cx="398.2" cy="131.5" r="6.2" fill="#2DD4BF" stroke="#0D1117" stroke-width="2"/>
+  <text x="409.2" y="132.5" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="12.5" font-weight="700" fill="#5EEAD4">pi-prime (R1)</text>
+  <text x="409.2" y="146.5" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="10.8" font-weight="600" fill="#F0F6FC">73.0% · $0.151/trial</text>
+  <text x="261.5" y="143.5" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="10.5" font-weight="600" fill="#5EEAD4">R2 · 71.4%</text>
+  <text x="204.3" y="166.5" text-anchor="end" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="12.2" font-weight="700" fill="#5EEAD4">pi-prime (R3)</text>
+  <text x="204.3" y="180.5" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="10.5" font-weight="600" fill="#F0F6FC">70.6% · $0.169/pass</text>
+</g>
+<text x="104.7" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.10</text>
+<text x="219.3" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.12</text>
+<text x="334.0" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.14</text>
+<text x="448.7" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.16</text>
+<text x="563.3" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.18</text>
+<text x="678.0" y="464" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">$0.20</text>
+<text x="420.0" y="484" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="12" font-weight="600" fill="#B1BAC4">Mean Cost per Trial (USD, lower is better)</text>
+<text x="65" y="403.3" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">55%</text>
+<text x="65" y="328.9" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">60%</text>
+<text x="65" y="254.4" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">65%</text>
+<text x="65" y="179.9" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">70%</text>
+<text x="65" y="105.4" text-anchor="end" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="11" fill="#8B949E">75%</text>
+<text x="24" y="269.0" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="12" font-weight="600" fill="#B1BAC4" transform="rotate(-90 24 269.0)">Harbor Mean Pass Rate (%)</text>
+<rect x="792" y="94" width="296" height="106" rx="9" fill="#161B22" stroke="#30363D"/>
+<rect x="792" y="108" width="3.5" height="78" rx="1.75" fill="#2DD4BF"/>
+<text x="810" y="119" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.2" font-weight="700" fill="#8B949E" letter-spacing="0.06em">PEAK PASS RATE</text>
+<text x="810" y="152" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="27" font-weight="700" fill="#5EEAD4" letter-spacing="-0.02em">73.0%</text>
+<text x="810" y="172" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" font-weight="600" fill="#F0F6FC">+11.7 pp vs. stock Pi (61.3%)</text>
+<text x="810" y="188" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.8" fill="#8B949E">+4.0 pp vs. #1 official ZCode (69.0%)</text>
+<rect x="792" y="214" width="296" height="106" rx="9" fill="#161B22" stroke="#30363D"/>
+<rect x="792" y="228" width="3.5" height="78" rx="1.75" fill="#2DD4BF"/>
+<text x="810" y="239" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.2" font-weight="700" fill="#8B949E" letter-spacing="0.06em">LOWEST COST / SOLVED TASK</text>
+<text x="810" y="272" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="27" font-weight="700" fill="#5EEAD4" letter-spacing="-0.02em">$0.169</text>
+<text x="810" y="292" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" font-weight="600" fill="#F0F6FC">Best across all 22 harnesses (R3)</text>
+<text x="810" y="308" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.8" fill="#8B949E">−24% vs. ZCode · −41% vs. Claude Code</text>
+<rect x="792" y="334" width="296" height="110" rx="9" fill="#161B22" stroke="#30363D"/>
+<rect x="792" y="348" width="3.5" height="82" rx="1.75" fill="#2DD4BF"/>
+<text x="810" y="359" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.2" font-weight="700" fill="#8B949E" letter-spacing="0.06em">EXECUTION EFFICIENCY</text>
+<text x="810" y="392" font-family="ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace" font-size="27" font-weight="700" fill="#5EEAD4" letter-spacing="-0.02em">99.2%</text>
+<text x="810" y="412" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="11.5" font-weight="600" fill="#F0F6FC">Prompt cache hit rate (#1 overall)</text>
+<text x="810" y="428" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.8" fill="#8B949E">Timeouts cut 24 → 7 · 744 total trials</text>
+<text x="32" y="504" font-family="-apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", "Helvetica Neue", Arial, sans-serif" font-size="10.5" fill="#6E7681">Off-scale right: GitHub Copilot CLI ($0.288, 58.5%), Cline CLI ($0.545, 63.3%). R2/R3 include 3/2 sandbox OOMs scored as 0 (72.2% / 71.1% excl. OOM). Snapshot: frontierharness.org.</text>
+</svg>
