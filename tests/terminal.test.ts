@@ -15,6 +15,7 @@ import {
   createAgentSession, createCodemodeExtension, DefaultResourceLoader, initTheme, SessionManager, SettingsManager, ToolExecutionComponent,
   type AgentToolResult, type ExtensionAPI, type ToolDefinition,
 } from "@earendil-works/pi-coding-agent";
+import { artifactsRoot } from "../src/artifacts.ts";
 import { OutputBuffer } from "../src/terminal/output.ts";
 import { resolveBinaryPath, TerminalRuntime, type TerminalOutput } from "../src/terminal/runtime.ts";
 import betterTerminal from "../src/terminal/index.ts";
@@ -284,19 +285,21 @@ test("Windows pipe and TTY sessions stay UTF-8 even when the parent host console
     assert.equal(item.log, undefined);
     assert.match(item.text, /^65001\n中文 😀$/);
   }
-  // Even when a ConPTY starts at OEMCP 936 (standard Chinese Windows), the native UTF-8 shim
-  // switches the pseudoconsole to 65001 so raw UTF-8 byte streams do not mojibake into 涓枃.
+  // Even when a console starts at OEMCP 936 or 437 (standard Chinese/English Windows), the native
+  // UTF-8 shim switches both pipe and ConPTY consoles to 65001 so UTF-8 streams never mojibake.
   const runtime = new TerminalRuntime();
   try {
     const exe = resolveBinaryPath();
-    const recovered = await runtime.exec({
-      cwd,
-      tty: true,
-      yield_time_ms: 10_000,
-      cmd: `chcp.com 936 > $null; & ${quote(exe)} --conpty-utf8-exec pwsh.exe -NoLogo -NoProfile -Command '[Console]::InputEncoding.CodePage; [Console]::OutputEncoding.CodePage; node -e "fs.writeSync(1, Buffer.from(String.fromCodePoint(0x4e2d,0x6587,0x20,0x1f600,10)))"'`,
-    });
-    assert.equal(recovered.exit_code, 0);
-    assert.match(recovered.output, /65001\n65001\n中文 😀/);
+    for (const tty of [false, true]) {
+      const recovered = await runtime.exec({
+        cwd,
+        tty,
+        yield_time_ms: 10_000,
+        cmd: `chcp.com 437 > $null; & ${quote(exe)} --conpty-utf8-exec pwsh.exe -NoLogo -NoProfile -Command '[Console]::InputEncoding.CodePage; [Console]::OutputEncoding.CodePage; "中文 😀"; node -e "fs.writeSync(1, Buffer.from(String.fromCodePoint(0x4e2d,0x6587,0x20,0x1f600,10)))"'`,
+      });
+      assert.equal(recovered.exit_code, 0);
+      assert.match(recovered.output, /65001\n65001\n中文 😀\n中文 😀/);
+    }
   } finally {
     await runtime.dispose();
   }
@@ -1121,7 +1124,7 @@ throw new Error("parent failed with a large returned result");` });
     assert.ok(largeRecovery && largeRecovery.text.length < 2500, JSON.stringify(large.content));
     const recoveryPath = /Read the complete results at (.+)\.\nPreview:/.exec(largeRecovery.text)?.[1];
     assert.ok(recoveryPath, largeRecovery.text);
-    assert.ok(dirname(recoveryPath).startsWith(join(tmpdir(), "pi-prime-artifacts", "codemode-")));
+    assert.ok(dirname(recoveryPath).startsWith(join(artifactsRoot, "codemode-")));
     t.after(() => rm(dirname(recoveryPath), { recursive: true, force: true }));
     const savedOutput = await readFile(recoveryPath, "utf8");
     for (const line of [0, 199, 399]) assert.ok(savedOutput.includes(`RECOVERY_LINE_${line}_中文_`));

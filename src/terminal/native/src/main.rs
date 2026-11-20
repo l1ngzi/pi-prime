@@ -346,13 +346,30 @@ fn spawn(
             readers: vec![reader, writer_task],
         })
     } else {
-        let mut command = tokio::process::Command::new(shell);
         #[cfg(windows)]
-        command.args(["-NoLogo", "-NoProfile", "-NonInteractive", "-Command", cmd]);
+        let mut command = {
+            let mut command = tokio::process::Command::new(
+                std::env::current_exe().context("missing current executable path")?,
+            );
+            command.args([
+                OsStr::new("--conpty-utf8-exec"),
+                shell.as_os_str(),
+                OsStr::new("-NoLogo"),
+                OsStr::new("-NoProfile"),
+                OsStr::new("-NonInteractive"),
+                OsStr::new("-Command"),
+                OsStr::new(cmd),
+            ]);
+            command
+        };
         #[cfg(unix)]
-        command
-            .args(["--noprofile", "--norc", "-c", cmd])
-            .env_remove("BASH_ENV");
+        let mut command = {
+            let mut command = tokio::process::Command::new(shell);
+            command
+                .args(["--noprofile", "--norc", "-c", cmd])
+                .env_remove("BASH_ENV");
+            command
+        };
         command
             .current_dir(cwd)
             .env("TERM", "dumb")
@@ -449,17 +466,47 @@ unsafe extern "system" fn ignore_console_interrupt(ctrl_type: u32) -> i32 {
 }
 
 #[cfg(windows)]
+fn clear_std_handle_inherit() -> Result<()> {
+    for stream in [
+        winapi::um::winbase::STD_INPUT_HANDLE,
+        winapi::um::winbase::STD_OUTPUT_HANDLE,
+        winapi::um::winbase::STD_ERROR_HANDLE,
+    ] {
+        let handle = unsafe { winapi::um::processenv::GetStdHandle(stream) };
+        if handle.is_null() || handle == winapi::um::handleapi::INVALID_HANDLE_VALUE {
+            continue;
+        }
+        if unsafe {
+            winapi::um::handleapi::SetHandleInformation(
+                handle,
+                winapi::um::winbase::HANDLE_FLAG_INHERIT,
+                0,
+            )
+        } == 0
+        {
+            return Err(std::io::Error::last_os_error().into());
+        }
+    }
+    Ok(())
+}
+
+#[cfg(windows)]
 fn run_conpty_utf8_exec(shell: &OsStr, args: &[OsString]) -> ! {
     const CP_UTF8: u32 = 65001;
-    // ConPTY initializes its screen/client code page from the host system OEMCP (e.g. 936 on
-    // standard Chinese Windows). Switch the attached pseudoconsole to UTF-8 before launching
-    // pwsh so native tools and Console encodings stay UTF-8 without touching script line numbers.
+    // Both ConPTY and CREATE_NO_WINDOW consoles initialize their code page from the host system
+    // OEMCP (e.g. 437 on English Windows, 936 on Chinese Windows). Switch the attached console
+    // to UTF-8 before launching pwsh so native tools and Console encodings stay UTF-8 without
+    // touching script line numbers.
     // A custom handler (unlike NULL, TRUE) is not inherited by pwsh or interactive children.
+    // Also clear inheritability on this shim's own stdio handles before Rust duplicates them for
+    // the child: otherwise the original handles leak as extra inheritable duplicates into
+    // detached grandchildren and keep the parent's output pipes open past exit.
     unsafe {
         winapi::um::wincon::SetConsoleCP(CP_UTF8);
         winapi::um::wincon::SetConsoleOutputCP(CP_UTF8);
         SetConsoleCtrlHandler(Some(ignore_console_interrupt), 1);
     }
+    let _ = clear_std_handle_inherit();
     match std::process::Command::new(shell).args(args).status() {
         Ok(status) => std::process::exit(status.code().unwrap_or(1)),
         Err(error) => {
@@ -478,11 +525,15 @@ fn main() -> Result<()> {
             run_conpty_utf8_exec(shell, &raw_args[3..]);
         }
     }
-    tokio::runtime::Builder::new_multi_thread()
+    let runtime = tokio::runtime::Builder::new_multi_thread()
         .worker_threads(2)
         .enable_all()
-        .build()?
-        .block_on(bridge_main())
+        .build()?;
+    let result = runtime.block_on(bridge_main());
+    // Release any Windows blocking pipe readers that a preserved detached descendant still holds
+    // open so bridge shutdown does not stall waiting for background jobs.
+    runtime.shutdown_background();
+    result
 }
 
 async fn bridge_main() -> Result<()> {
@@ -500,23 +551,7 @@ async fn bridge_main() -> Result<()> {
     // stdio must never reach pwsh or its background descendants: otherwise they
     // can keep the JSON channel open after this helper exits.
     #[cfg(windows)]
-    for stream in [
-        winapi::um::winbase::STD_INPUT_HANDLE,
-        winapi::um::winbase::STD_OUTPUT_HANDLE,
-        winapi::um::winbase::STD_ERROR_HANDLE,
-    ] {
-        let handle = unsafe { winapi::um::processenv::GetStdHandle(stream) };
-        if unsafe {
-            winapi::um::handleapi::SetHandleInformation(
-                handle,
-                winapi::um::winbase::HANDLE_FLAG_INHERIT,
-                0,
-            )
-        } == 0
-        {
-            return Err(std::io::Error::last_os_error().into());
-        }
-    }
+    clear_std_handle_inherit()?;
     let mut sessions = HashMap::<u64, Session>::new();
     emit(json!({"event": "ready"}));
     for line in std::io::stdin().lock().lines() {

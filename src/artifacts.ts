@@ -5,7 +5,8 @@ import { dirname, join, resolve } from "node:path";
 
 // Evaluation runners and power users can override where retained tool outputs are stored.
 const defaultRoot = typeof process.getuid === "function" ? `pi-prime-artifacts-${process.getuid()}` : "pi-prime-artifacts";
-const root = resolve(process.env.PI_PRIME_ARTIFACTS_DIR || join(tmpdir(), defaultRoot));
+export const artifactsRoot = resolve(process.env.PI_PRIME_ARTIFACTS_DIR || join(tmpdir(), defaultRoot));
+const root = artifactsRoot;
 const RETENTION_MS = 14 * 24 * 60 * 60_000;
 const MAX_TEXT_BYTES = 16 * 1024 * 1024;
 let lastSweep = 0;

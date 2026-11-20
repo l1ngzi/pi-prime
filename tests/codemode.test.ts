@@ -11,7 +11,7 @@ import { visibleWidth } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 import codemode from "../src/codemode.ts";
 import terminal from "../src/terminal/index.ts";
-import { archiveText, artifactDirectory } from "../src/artifacts.ts";
+import { archiveText, artifactDirectory, artifactsRoot } from "../src/artifacts.ts";
 import { compactArgumentError, toolErrorHint } from "../src/tool-diagnostics.ts";
 
 initTheme("dark", false);
@@ -671,7 +671,7 @@ test("failed scripts preserve unprinted effects and model calls before the full 
 });
 
 test("artifact reaper respects fresh child logs inside long-lived directories", async t => {
-  const root = join(tmpdir(), "pi-prime-artifacts");
+  const root = artifactsRoot;
   const suffix = Math.random().toString(36).slice(2, 8).padEnd(6, "x");
   const staleDir = join(root, `codemode-999999991-${suffix}`);
   const activeLogDir = join(root, `codemode-999999992-${suffix}`);

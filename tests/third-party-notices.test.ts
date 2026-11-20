@@ -13,7 +13,7 @@ test("the shipped notices cover every registry entry in Cargo.lock and the upstr
 	assert.equal(crates.length, lock.match(/^source = "registry\+/gm)!.length);
 	assert.ok(crates.filter(crate => crate.name === "bitflags").length >= 2);
 	assert.ok(!crates.some(crate => crate.name === "pi-prime-terminal"));
-	const notices = await readFile(new URL("THIRD-PARTY-NOTICES.txt", project), "utf8");
+	const notices = (await readFile(new URL("THIRD-PARTY-NOTICES.txt", project), "utf8")).replace(/\r\n/g, "\n");
 	for (const { name, version } of crates) assert.ok(notices.includes(`\n${name} ${version} `), `${name} ${version}`);
 	assert.match(notices, /OpenAI Codex, commit b8dceb0d/);
 	assert.match(notices, /Copyright 2025 OpenAI\. Licensed under Apache-2\.0/);
