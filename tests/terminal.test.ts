@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import crypto, { generateKeyPairSync, randomUUID } from "node:crypto";
 import childProcess, { spawnSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { syncBuiltinESMExports } from "node:module";
 import { tmpdir } from "node:os";
@@ -21,7 +21,7 @@ import { resolveBinaryPath, TerminalRuntime, type TerminalOutput } from "../src/
 import betterTerminal from "../src/terminal/index.ts";
 
 const { Server } = ssh2;
-const cwd = await mkdtemp(join(tmpdir(), "pi-prime-terminal-中文 O'Brien-"));
+const cwd = realpathSync.native(await mkdtemp(join(tmpdir(), "pi-prime-terminal-中文 O'Brien-")));
 after(() => rm(cwd, { recursive: true, force: true }));
 const windows = process.platform === "win32";
 const shell = (powershell: string, bash: string) => windows ? powershell : bash;
@@ -196,7 +196,7 @@ test("PowerShell 7, Unicode/quoted cwd, stderr and exit codes", { skip: !windows
     assert.equal(output.exit_code, 7);
     assert.equal(output.session_id, undefined);
     assert.match(output.output, /7\n/);
-    assert.ok(output.output.includes(cwd));
+    assert.ok(output.output.includes(cwd), output.output);
     assert.ok(output.output.includes("中文 😀"));
     assert.ok(output.output.includes("STDERR"));
     const failed = await runtime.exec({ cwd, cmd: "'first'\n'second'\nthrow 'source marker'" });
@@ -378,7 +378,7 @@ test("Bash handles shell syntax, Unicode/quoted cwd, stderr and exit codes", { s
       const output = await runtime.exec({ cwd, tty, cmd: "[[ -n $BASH_VERSION ]] || exit 99; printf '%s\\n' \"$PWD\" '中文 😀'; printf 'STDERR\\n' >&2; exit 7" });
       assert.equal(output.exit_code, 7);
       assert.equal(output.session_id, undefined);
-      assert.ok(output.output.includes(cwd));
+      assert.ok(output.output.includes(cwd), output.output);
       assert.ok(output.output.includes("中文 😀"));
       assert.ok(output.output.includes("STDERR"));
       const invalid = await runtime.exec({ cwd, tty, cmd: "if (" });
