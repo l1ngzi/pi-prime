@@ -209,13 +209,13 @@ test("PowerShell source positions and UTF-8 defaults survive pipe and TTY execut
   const runtime = new TerminalRuntime();
   t.after(() => runtime.dispose());
   for (const tty of [false, true]) {
-    const encoding = await runtime.exec({ cwd, tty, cmd: '[Console]::OutputEncoding.CodePage; $OutputEncoding.CodePage; $PSStyle.OutputRendering; "中文 😀"; [Console]::Error.WriteLine("错误 😀")' });
+    const encoding = await runtime.exec({ cwd, tty, yield_time_ms: 10_000, cmd: '[Console]::OutputEncoding.CodePage; $OutputEncoding.CodePage; $PSStyle.OutputRendering; "中文 😀"; [Console]::Error.WriteLine("错误 😀")' });
     assert.match(encoding.output, /65001\n65001\nPlainText/);
     assert.match(encoding.output, /中文 😀/);
     assert.match(encoding.output, /错误 😀/);
     // Fix this fixture's diagnostic language without adding a line to its source.
-    const result = await runtime.exec({ cwd, tty, cmd: "[Threading.Thread]::CurrentThread.CurrentUICulture='en-US'; function f {\nthrow 'marker'\n}\ntry { f } catch { \"ROW=$($_.InvocationInfo.ScriptLineNumber)\"; $_.ScriptStackTrace }\n$ErrorView='NormalView'; throw 'normal marker'" });
-    assert.equal(result.exit_code, 1);
+    const result = await runtime.exec({ cwd, tty, yield_time_ms: 10_000, cmd: "[Threading.Thread]::CurrentThread.CurrentUICulture='en-US'; function f {\nthrow 'marker'\n}\ntry { f } catch { \"ROW=$($_.InvocationInfo.ScriptLineNumber)\"; $_.ScriptStackTrace }\n$ErrorView='NormalView'; throw 'normal marker'" });
+    assert.equal(result.exit_code, 1, JSON.stringify(result));
     assert.match(result.output, /ROW=2/);
     assert.match(result.output, /at f, <No file>: line 2/);
     assert.match(result.output, /at <ScriptBlock>, <No file>: line 4/);
@@ -309,7 +309,7 @@ test("TTY trims excess trailing blank rows while pipe output preserves them", as
   const runtime = new TerminalRuntime();
   t.after(() => runtime.dispose());
   for (const tty of [false, true]) {
-    const result = await runtime.exec({ cwd, cmd: node('process.stdout.write("ROW\\n\\n\\n\\n")'), tty });
+    const result = await runtime.exec({ cwd, cmd: node('process.stdout.write("ROW\\n\\n\\n\\n")'), tty, yield_time_ms: 10_000 });
     assert.equal(result.exit_code, 0);
     if (tty) assert.match(result.output, /ROW\n?$/);
     else assert.equal(result.output, "ROW\n\n\n\n");
@@ -375,13 +375,13 @@ test("Bash handles shell syntax, Unicode/quoted cwd, stderr and exit codes", { s
   const runtime = new TerminalRuntime();
   try {
     for (const tty of [false, true]) {
-      const output = await runtime.exec({ cwd, tty, cmd: "[[ -n $BASH_VERSION ]] || exit 99; printf '%s\\n' \"$PWD\" '中文 😀'; printf 'STDERR\\n' >&2; exit 7" });
+      const output = await runtime.exec({ cwd, tty, yield_time_ms: 10_000, cmd: "[[ -n $BASH_VERSION ]] || exit 99; printf '%s\\n' \"$PWD\" '中文 😀'; printf 'STDERR\\n' >&2; exit 7" });
       assert.equal(output.exit_code, 7);
       assert.equal(output.session_id, undefined);
       assert.ok(output.output.includes(cwd), output.output);
       assert.ok(output.output.includes("中文 😀"));
       assert.ok(output.output.includes("STDERR"));
-      const invalid = await runtime.exec({ cwd, tty, cmd: "if (" });
+      const invalid = await runtime.exec({ cwd, tty, yield_time_ms: 10_000, cmd: "if (" });
       assert.equal(invalid.exit_code, 2);
       assert.match(invalid.output, /syntax error/);
     }
@@ -516,7 +516,7 @@ test("TTY survives cancelled wait; native line endings and Unicode input are inc
     assert.equal(finished.exit_code, 0);
     assert.equal(finished.output, "");
     await assert.rejects(runtime.write({ session_id: initial.session_id, chars: "more\n" }), /exited with code 0/);
-    const spacing = await runtime.exec({ cwd, tty: true, cmd: shell('[Console]::Write("`n`n  indented`n")', "printf '\\n\\n  indented\\n'") });
+    const spacing = await runtime.exec({ cwd, tty: true, yield_time_ms: 10_000, cmd: shell('[Console]::Write("`n`n  indented`n")', "printf '\\n\\n  indented\\n'") });
     assert.equal(spacing.output, "\n\n  indented\n");
   } finally { await runtime.dispose(); }
 });
@@ -733,7 +733,7 @@ test("Windows normal exit preserves descendants; explicit close owns the full tr
     try {
       const childCode = `/*${nonce}*/setTimeout(()=>{},20000)`;
       const cmd = node(`const{spawn}=require('node:child_process');const c=spawn(process.execPath,['-e',${JSON.stringify(childCode)}],{detached:true,stdio:'ignore',windowsHide:true});c.unref();console.log('CHILD='+c.pid+' READY');${terminate ? "setTimeout(()=>{},20000)" : ""}`);
-      const output = terminate ? await start(runtime, cmd, tty) : await runtime.exec({ cmd, cwd, tty });
+      const output = terminate ? await start(runtime, cmd, tty) : await runtime.exec({ cmd, cwd, tty, yield_time_ms: 10_000 });
       pid = Number(output.output.match(/CHILD=(\d+)/)?.[1]);
       assert.ok(pid, output.output);
       assert.ok(alive(pid));
@@ -844,7 +844,7 @@ test("Linux bridge releases its readers while a detached descendant still holds 
     try {
       const child = `/*${nonce}*/setTimeout(()=>{},20000)`;
       const cmd = node(`const{spawn}=require('node:child_process');const c=spawn(process.execPath,['-e',${JSON.stringify(child)}],{detached:true,stdio:['ignore','inherit','ignore']});c.unref();console.log('CHILD='+c.pid)`);
-      const output = await runtime.exec({ cmd, cwd, tty });
+      const output = await runtime.exec({ cmd, cwd, tty, yield_time_ms: 10_000 });
       assert.equal(output.exit_code, 0);
       pid = Number(output.output.match(/CHILD=(\d+)/)?.[1]);
       assert.ok(pid && alive(pid), output.output);
