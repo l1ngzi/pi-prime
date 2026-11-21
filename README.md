@@ -1,5 +1,7 @@
 # pi-prime (π')
 
+**English** · [简体中文](README.zh-CN.md)
+
 **A sharpened, zero-dependency core harness package for [Pi](https://pi.dev).**
 
 Native Rust PTY terminals, lossless file I/O, adaptive code mode, post-compaction recall, provider transport fixes, and TUI upgrades—packaged as a single drop-in Pi extension with zero runtime npm dependencies and no external API keys required.
